@@ -1,12 +1,16 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import booksRoute from './routes/booksRoute.js';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+// Routes
+app.use('/books', booksRoute);
 
 // Root route
 app.get('/', (req, res) => {
