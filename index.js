@@ -2,6 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import booksRoute from './routes/booksRoute.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
@@ -18,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 // MongoDB connection
-const MONGODB_URI = 'mongodb://localhost:27017/bookstore';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bookstore';
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
@@ -32,6 +35,7 @@ mongoose.connect(MONGODB_URI)
 // Start server regardless of database connection
 app.listen(5555, () => {
   console.log('Server is running on port 5555');
+  console.log(`MongoDB URI in use: ${MONGODB_URI}`);
 });
 
 export default app;

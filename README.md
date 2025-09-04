@@ -85,3 +85,17 @@ BookStore/
 - Add validation and error handling
 - Set up environment variables
 - Add authentication and authorization
+
+## Environment Setup
+
+Create a `.env` file in the project root:
+
+```
+MONGODB_URI=mongodb://localhost:27017/bookstore
+```
+
+For MongoDB Atlas, use your connection string:
+
+```
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/bookstore?retryWrites=true&w=majority
+```
