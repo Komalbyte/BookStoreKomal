@@ -90,6 +90,8 @@ BookStore/
 
 Create a `.env` file in the project root:
 
+> **Note:** This project is now configured for dual repository deployment!
+
 ```
 MONGODB_URI=mongodb://localhost:27017/bookstore
 ```
