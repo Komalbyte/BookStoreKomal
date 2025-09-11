@@ -3,15 +3,78 @@ import Book from '../models/bookModel.js';
 
 const router = express.Router();
 
-// GET route to retrieve all books
+// GET route to retrieve all books with pagination
 router.get('/', async (req, res) => {
   try {
-    const books = await Book.find({});
-    res.status(200).json(books);
+    // Get query parameters with defaults
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    // Validate pagination parameters
+    if (page < 1 || isNaN(page)) {
+      return res.status(400).json({
+        message: 'Page number must be greater than 0',
+        error: 'Invalid page parameter'
+      });
+    }
+
+    if (limit < 1 || limit > 100 || isNaN(limit)) {
+      return res.status(400).json({
+        message: 'Limit must be between 1 and 100',
+        error: 'Invalid limit parameter'
+      });
+    }
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder;
+
+    // Fetch books with pagination and sorting
+    const books = await Book.find({})
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .select('-__v'); // Exclude version field
+
+    // Count total number of books
+    const totalBooks = await Book.countDocuments();
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalBooks / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // Send response with books and pagination data
+    res.status(200).json({
+      success: true,
+      data: {
+        books,
+        pagination: {
+          currentPage: page,
+          totalPages: totalPages,
+          totalBooks: totalBooks,
+          booksPerPage: limit,
+          hasNextPage: hasNextPage,
+          hasPrevPage: hasPrevPage,
+          nextPage: hasNextPage ? page + 1 : null,
+          prevPage: hasPrevPage ? page - 1 : null
+        },
+        sorting: {
+          sortBy: sortBy,
+          sortOrder: sortOrder === 1 ? 'asc' : 'desc'
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({ 
       message: 'Error retrieving books', 
-      error: error.message 
+      error: error.message,
+      details: 'An unexpected error occurred while fetching books'
     });
   }
 });
