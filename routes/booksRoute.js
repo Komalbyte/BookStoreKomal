@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Book from '../models/bookModel.js';
 
 const router = express.Router();
@@ -75,6 +76,49 @@ router.get('/', async (req, res) => {
       message: 'Error retrieving books', 
       error: error.message,
       details: 'An unexpected error occurred while fetching books'
+    });
+  }
+});
+
+// GET route to fetch a single book by ID
+router.get('/:id', async (req, res) => {
+  try {
+    // Extract the ID from the route parameter
+    const { id } = req.params;
+
+    // Check if the ID is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        message: 'Invalid book ID format',
+        error: 'The provided ID is not a valid MongoDB ObjectId',
+        details: 'Book ID must be a 24-character hexadecimal string'
+      });
+    }
+
+    // Fetch the book by ID from the database
+    const book = await Book.findById(id).select('-__v'); // Exclude version field
+
+    // If book is not found, return a 404 response
+    if (!book) {
+      return res.status(404).json({ 
+        message: 'Book not found',
+        error: `No book found with ID: ${id}`,
+        details: 'Please check the book ID and try again'
+      });
+    }
+
+    // Return the book in the response
+    res.status(200).json({
+      success: true,
+      data: {
+        book: book
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error fetching book', 
+      error: error.message,
+      details: 'An unexpected error occurred while fetching the book'
     });
   }
 });
