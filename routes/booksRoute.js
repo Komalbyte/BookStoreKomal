@@ -18,33 +18,50 @@ router.get('/', async (req, res) => {
 
 // POST route to add a new book
 router.post('/add', async (req, res) => {
-  const { title, author, genre, publishedDate } = req.body;
-
-  // Validate required fields
-  if (!title || !author || !genre || !publishedDate) {
-    return res.status(400).json({ 
-      message: 'All fields (title, author, genre, publishedDate) are required' 
-    });
-  }
-
-  const newBook = new Book({
-    title,
-    author,
-    genre,
-    publishedDate,
-  });
-
   try {
+    const { title, author, genre, publishedDate } = req.body;
+
+    // Create a new book instance with the request data
+    const newBook = new Book({
+      title,
+      author,
+      genre,
+      publishedDate,
+    });
+
+    // Attempt to save the new book to the database
+    // Mongoose will automatically validate the data before saving
     await newBook.save();
+
+    // Send success response
     res.status(201).json({ 
       message: 'Book added successfully!',
       book: newBook
     });
   } catch (error) {
-    res.status(400).json({ 
-      message: 'Error adding book', 
-      error: error.message 
-    });
+    // Handle different types of errors
+    if (error.name === 'ValidationError') {
+      // Extract validation error messages
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: validationErrors,
+        details: 'Please check the following fields: ' + validationErrors.join(', ')
+      });
+    } else if (error.name === 'CastError') {
+      return res.status(400).json({
+        message: 'Invalid data format',
+        error: `Invalid ${error.path}: ${error.value}`,
+        details: 'Please ensure all fields are in the correct format'
+      });
+    } else {
+      // Handle other errors (like database connection issues)
+      return res.status(500).json({
+        message: 'Error adding book',
+        error: error.message,
+        details: 'An unexpected error occurred while saving the book'
+      });
+    }
   }
 });
 
