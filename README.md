@@ -7,7 +7,10 @@ A Node.js/Express backend API for managing a book collection with MongoDB integr
 - Express.js server setup
 - MongoDB connection using Mongoose
 - CORS enabled for cross-origin requests
-- Basic GET route implementation
+- Complete CRUD API for book management
+- Advanced pagination and sorting
+- Comprehensive validation and error handling
+- Professional API responses
 - Organized project structure for scalability
 
 ## Prerequisites
@@ -49,6 +52,11 @@ Expected response: `Welcome to MERN Backend`
 ## API Endpoints
 
 - `GET /` - Welcome message
+- `GET /books` - Get all books with pagination and sorting
+- `GET /books/:id` - Get a single book by ID
+- `POST /books/add` - Create a new book
+- `PUT /books/:id` - Update an existing book
+- `DELETE /books/:id` - Delete a book
 
 ## Database Connection
 
@@ -78,13 +86,22 @@ BookStore/
 - **cors**: Cross-Origin Resource Sharing middleware
 - **nodemon**: Development server with auto-restart
 
+## Completed Features
+
+- ✅ Book model with Mongoose
+- ✅ Complete CRUD operations for books
+- ✅ Advanced validation and error handling
+- ✅ Environment variables setup
+- ✅ Pagination and sorting
+- ✅ Professional API responses
+
 ## Next Steps
 
-- Create Book model with Mongoose
-- Implement CRUD operations for books
-- Add validation and error handling
-- Set up environment variables
 - Add authentication and authorization
+- Add rate limiting
+- Add API documentation with Swagger
+- Add unit tests
+- Add Docker support
 
 ## Environment Setup
 

@@ -228,3 +228,51 @@ router.put('/:id', async (req, res) => {
     });
   }
 });
+
+// DELETE route to remove a book by ID
+router.delete('/:id', async (req, res) => {
+  try {
+    // Extract the ID from the URL parameter
+    const { id } = req.params;
+
+    // Check if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        message: 'Invalid book ID',
+        error: 'The provided ID is not a valid MongoDB ObjectId',
+        details: 'Book ID must be a 24-character hexadecimal string'
+      });
+    }
+
+    // Attempt to find and delete the book by ID
+    const deletedBook = await Book.findByIdAndDelete(id);
+
+    // If the book was not found, return a 404 error
+    if (!deletedBook) {
+      return res.status(404).json({ 
+        message: 'Book not found',
+        error: `No book found with ID: ${id}`,
+        details: 'Please check the book ID and try again'
+      });
+    }
+
+    // Return a success message indicating the book has been deleted
+    res.status(200).json({ 
+      message: 'Book deleted successfully',
+      data: {
+        deletedBook: {
+          id: deletedBook._id,
+          title: deletedBook.title,
+          author: deletedBook.author,
+          genre: deletedBook.genre
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error deleting book', 
+      error: error.message,
+      details: 'An unexpected error occurred while deleting the book'
+    });
+  }
+});
