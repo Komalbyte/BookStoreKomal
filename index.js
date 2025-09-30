@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import booksRoute from './routes/booksRoute.js';
 import dotenv from 'dotenv';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -37,5 +38,8 @@ app.listen(5555, () => {
   console.log('Server is running on port 5555');
   console.log(`MongoDB URI in use: ${MONGODB_URI}`);
 });
+
+// Centralized error handler (must be after routes)
+app.use(errorHandler);
 
 export default app;

@@ -98,9 +98,23 @@ export const getBookById = async (req, res) => {
 };
 
 // POST: add a new book
-export const addBook = async (req, res) => {
+export const addBook = async (req, res, next) => {
+  const { title, author, genre, publishedDate } = req.body || {};
+
+  // Manual basic validation before hitting Mongoose
+  const missingFields = [];
+  if (!title) missingFields.push('title');
+  if (!author) missingFields.push('author');
+  if (!genre) missingFields.push('genre');
+  if (!publishedDate) missingFields.push('publishedDate');
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      message: 'Required fields are missing',
+      errors: missingFields.map(f => `${f} is required`)
+    });
+  }
+
   try {
-    const { title, author, genre, publishedDate } = req.body;
     const newBook = new Book({ title, author, genre, publishedDate });
     await newBook.save();
     return res.status(201).json({ message: 'Book added successfully!', book: newBook });
@@ -119,11 +133,8 @@ export const addBook = async (req, res) => {
         details: 'Please ensure all fields are in the correct format'
       });
     }
-    return res.status(500).json({
-      message: 'Error adding book',
-      error: error.message,
-      details: 'An unexpected error occurred while saving the book'
-    });
+    // Defer unexpected errors to centralized error handler
+    return next(error);
   }
 };
 
