@@ -4,6 +4,8 @@ import cors from 'cors';
 import booksRoute from './routes/booksRoute.js';
 import dotenv from 'dotenv';
 import errorHandler from './middleware/errorHandler.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -12,6 +14,10 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+// Serve static frontend from /public
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/books', booksRoute);

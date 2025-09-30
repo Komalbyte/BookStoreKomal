@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book List</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>Books</h1>
+    <div id="status" class="muted">Loading books...</div>
+  </header>
+
+  <main>
+    <div id="controls">
+      <label>
+        Page
+        <input id="page" type="number" min="1" value="1" />
+      </label>
+      <label>
+        Limit
+        <input id="limit" type="number" min="1" max="100" value="10" />
+      </label>
+      <label>
+        Sort By
+        <select id="sortBy">
+          <option value="createdAt" selected>createdAt</option>
+          <option value="title">title</option>
+          <option value="author">author</option>
+          <option value="genre">genre</option>
+        </select>
+      </label>
+      <label>
+        Order
+        <select id="sortOrder">
+          <option value="desc" selected>desc</option>
+          <option value="asc">asc</option>
+        </select>
+      </label>
+      <button id="reload">Reload</button>
+    </div>
+
+    <section id="book-list"></section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
