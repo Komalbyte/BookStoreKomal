@@ -8,6 +8,14 @@ const sortByEl = document.getElementById('sortBy');
 const sortOrderEl = document.getElementById('sortOrder');
 const reloadBtn = document.getElementById('reload');
 
+// Form elements
+const bookForm = document.getElementById('book-form');
+const titleInput = document.getElementById('title');
+const authorInput = document.getElementById('author');
+const genreInput = document.getElementById('genre');
+const publishedDateInput = document.getElementById('publishedDate');
+const submitBtn = document.getElementById('submit-btn');
+
 async function fetchBooks() {
   const page = Number(pageEl.value) || 1;
   const limit = Number(limitEl.value) || 10;
@@ -53,7 +61,66 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 }
 
+async function addBook(event) {
+  event.preventDefault();
+  
+  const title = titleInput.value.trim();
+  const author = authorInput.value.trim();
+  const genre = genreInput.value.trim();
+  const publishedDate = publishedDateInput.value;
+  
+  if (!title || !author || !genre || !publishedDate) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Adding...';
+  
+  try {
+    const response = await fetch(`${API_BASE}/books/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        author,
+        genre,
+        publishedDate
+      })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: response.statusText }));
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+    
+    const result = await response.json();
+    alert('Book added successfully!');
+    
+    // Clear form
+    titleInput.value = '';
+    authorInput.value = '';
+    genreInput.value = '';
+    publishedDateInput.value = '';
+    
+    // Reload book list
+    await fetchBooks();
+    
+  } catch (error) {
+    alert(`Error adding book: ${error.message}`);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Add Book';
+  }
+}
+
+// Event listeners
 reloadBtn.addEventListener('click', fetchBooks);
+bookForm.addEventListener('submit', addBook);
+
+// Initial load
 fetchBooks();
 
 
