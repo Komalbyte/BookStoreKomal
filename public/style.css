@@ -15,8 +15,10 @@ input,select{background:#0e141b;color:var(--text);border:1px solid #1f2937;borde
 button{background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 12px;cursor:pointer}
 #submit-btn{grid-column:1/-1;justify-self:start;padding:10px 16px;font-weight:600}
 #book-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.book{background:var(--card);border:1px solid #1f2937;border-left:4px solid var(--accent);padding:14px;border-radius:10px}
+.book{background:var(--card);border:1px solid #1f2937;border-left:4px solid var(--accent);padding:14px;border-radius:10px;position:relative}
 .title{font-weight:600}
 .meta{color:var(--muted);font-size:13px;margin-top:6px}
+.delete-btn{position:absolute;top:8px;right:8px;background:#dc2626;color:white;border:none;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer;opacity:0.7;transition:opacity 0.2s}
+.delete-btn:hover{opacity:1}
 
 

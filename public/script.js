@@ -46,9 +46,23 @@ async function fetchBooks() {
       const title = escapeHtml(b.title || 'Untitled');
       const author = escapeHtml(b.author || 'Unknown');
       const genre = escapeHtml(b.genre || '');
-      card.innerHTML = `<div class="title">${title}</div><div class="meta">${author}${genre ? ' · ' + genre : ''}</div>`;
+      const bookId = b._id;
+      card.innerHTML = `
+        <div class="title">${title}</div>
+        <div class="meta">${author}${genre ? ' · ' + genre : ''}</div>
+        <button class="delete-btn" data-id="${bookId}">Delete</button>
+      `;
       bookList.appendChild(card);
     }
+
+    // Attach delete event listeners to all delete buttons
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const bookId = this.getAttribute('data-id');
+        deleteBook(bookId);
+      });
+    });
 
     statusEl.textContent = '';
   } catch (e) {
@@ -59,6 +73,31 @@ async function fetchBooks() {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+}
+
+async function deleteBook(bookId) {
+  if (!confirm('Are you sure you want to delete this book?')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/books/${bookId}`, {
+      method: 'DELETE',
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: response.statusText }));
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+    
+    alert('Book deleted successfully!');
+    
+    // Reload book list
+    await fetchBooks();
+    
+  } catch (error) {
+    alert(`Error deleting book: ${error.message}`);
+  }
 }
 
 async function addBook(event) {
